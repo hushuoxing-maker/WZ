@@ -19,7 +19,7 @@ body{
 background:
 radial-gradient(circle at 20% 20%,#1e293b 0%,transparent 40%),
 radial-gradient(circle at 80% 80%,#312e81 0%,transparent 40%),
-linear-gradient(160deg,#020617,#020617,#020617);
+linear-gradient(160deg,#020617,#020617);
 
 min-height:100vh;
 color:#e2e8f0;
@@ -36,7 +36,6 @@ text-align:center;
 font-size:34px;
 margin-bottom:40px;
 font-weight:600;
-letter-spacing:1px;
 }
 
 .card{
@@ -76,55 +75,68 @@ font-size:16px;
 
 }
 
-input:focus{
-outline:none;
-border-color:#6366f1;
-}
-
 button{
 
-width:100%;
-padding:14px;
+padding:12px 18px;
 border:none;
-border-radius:10px;
-
-font-size:16px;
+border-radius:8px;
 cursor:pointer;
+font-size:14px;
 
 background:linear-gradient(135deg,#6366f1,#8b5cf6);
-
 color:white;
-margin-top:8px;
 
 }
 
-button:hover{
-opacity:0.9;
+.generate{
+width:100%;
+margin-top:10px;
 }
 
-.copy{
+.results{
 
-background:linear-gradient(135deg,#10b981,#059669);
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(450px,1fr));
+gap:20px;
+
 }
 
-.result{
-
-margin-top:20px;
+.promptCard{
 
 background:#020617;
 border:1px solid #1e293b;
 
-padding:30px;
-
+padding:22px;
 border-radius:14px;
 
-white-space:pre-wrap;
 line-height:1.7;
 
-font-size:14px;
+position:relative;
 
-max-height:600px;
-overflow:auto;
+}
+
+.promptTitle{
+font-size:18px;
+font-weight:600;
+margin-bottom:10px;
+}
+
+.promptText{
+white-space:pre-wrap;
+font-size:14px;
+opacity:0.9;
+}
+
+.copyBtn{
+
+margin-top:16px;
+background:linear-gradient(135deg,#10b981,#059669);
+
+}
+
+.copyBtn.copied{
+
+background:#334155;
 
 }
 
@@ -146,13 +158,11 @@ overflow:auto;
 <label>海报副标题</label>
 <input id="subtitle" placeholder="例如：字体是最强视觉语言">
 
-<button onclick="generate()">生成20组提示词</button>
-
-<button class="copy" onclick="copyText()">一键复制提示词</button>
+<button class="generate" onclick="generate()">生成20组提示词</button>
 
 </div>
 
-<div id="output" class="result"></div>
+<div id="results" class="results"></div>
 
 </div>
 
@@ -170,9 +180,7 @@ let fonts=[
 "工业风字体结构",
 "复古宋体与现代字体结合",
 "书法字体与极简黑体组合",
-"实验性字体组合",
-"科技风无衬线字体",
-"文化风字体组合"
+"实验性字体组合"
 ]
 
 let layouts=[
@@ -183,9 +191,7 @@ let layouts=[
 "黄金比例构图",
 "对角线视觉动线构图",
 "模块化排版结构",
-"视觉矩阵结构",
-"极简留白构图",
-"层级递进排版"
+"极简留白构图"
 ]
 
 let colors=[
@@ -211,8 +217,7 @@ let aiOptimize=[
 "优化文字层级系统",
 "加强版面留白",
 "优化视觉阅读路径",
-"强化字体对比关系",
-"增强信息层级清晰度"
+"强化字体对比关系"
 ]
 
 function generate(){
@@ -220,13 +225,13 @@ function generate(){
 let title=document.getElementById("title").value
 let subtitle=document.getElementById("subtitle").value
 
-let result=[]
+let container=document.getElementById("results")
+
+container.innerHTML=""
 
 for(let i=1;i<=20;i++){
 
-let text=
-
-`${i}、
+let text=`
 
 主标题：${title}
 副标题：${subtitle}
@@ -235,48 +240,54 @@ let text=
 时间：2026设计论坛
 地点：城市文化艺术中心
 主办方：未来设计研究院
-联系方式：design@studio.cn
 
 纯文字视觉元素：
-${rand(visuals)}，通过文字结构构建视觉图形，利用正形与负形关系形成空间层次。
+${rand(visuals)}
 
 文字设计手法：
-${rand(fonts)}，
-字号层级清晰，
-字重节奏变化明显，
-文字横排竖排结合，
-字距行距形成视觉节奏。
+${rand(fonts)}
 
 版面构成：
-${rand(layouts)}，
-通过网格系统组织信息，
-留白强化视觉焦点。
+${rand(layouts)}
 
 色彩方案：
-${rand(colors)}。
+${rand(colors)}
 
 AI优化建议：
-${rand(aiOptimize)}。
+${rand(aiOptimize)}
 
 风格：
-纯文字排版设计、版面构成严谨、字体应用精准、信息层级清晰、视觉引导明确。
+纯文字排版设计、版面构成严谨、字体应用精准。
 `
 
-result.push(text)
+let card=document.createElement("div")
+card.className="promptCard"
 
-}
+card.innerHTML=`
+<div class="promptTitle">提示词 #${i}</div>
+<div class="promptText">${text}</div>
+<button class="copyBtn">复制提示词</button>
+`
 
-document.getElementById("output").innerText=result.join("\n\n")
+let btn=card.querySelector("button")
 
-}
-
-function copyText(){
-
-let text=document.getElementById("output").innerText
+btn.onclick=function(){
 
 navigator.clipboard.writeText(text)
 
-alert("提示词已复制")
+btn.innerText="已复制"
+btn.classList.add("copied")
+
+setTimeout(()=>{
+btn.innerText="复制提示词"
+btn.classList.remove("copied")
+},3000)
+
+}
+
+container.appendChild(card)
+
+}
 
 }
 
