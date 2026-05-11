@@ -1,311 +1,611 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
-<meta charset="UTF-8">
-<title>古月AI智能体 - AI纯文字海报生成器</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+  <title>古月AI智能体 · 纯文字海报提示词生成</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-<style>
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: "Microsoft YaHei", sans-serif;
-}
+    body {
+      background: radial-gradient(circle at 20% 30%, #1e293b 0%, transparent 45%),
+                  radial-gradient(circle at 80% 70%, #312e81 0%, transparent 50%),
+                  linear-gradient(160deg, #020617 0%, #0a0f1f 100%);
+      min-height: 100vh;
+      font-family: 'Segoe UI', 'Microsoft YaHei', 'PingFang SC', system-ui, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 1.5rem;
+      margin: 0;
+      color: #e2e8f0;
+    }
 
-body {
-  background:
-    radial-gradient(circle at 25% 25%, #1e293b 0%, transparent 35%),
-    radial-gradient(circle at 75% 75%, #312e81 0%, transparent 35%),
-    linear-gradient(160deg, #020617, #020617);
-  min-height: 100vh;
-  color: #e2e8f0;
-  padding: 60px 20px;
-}
+    .glass-panel {
+      width: 100%;
+      max-width: 1350px;
+      background: rgba(12, 18, 34, 0.7);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      border-radius: 2.5rem;
+      padding: 2.5rem 2.2rem;
+      box-shadow: 0 30px 50px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(56, 189, 248, 0.15);
+      transition: all 0.2s ease;
+    }
 
-.container {
-  max-width: 1200px;
-  margin: auto;
-}
+    h1 {
+      font-size: 2.8rem;
+      font-weight: 600;
+      text-align: center;
+      letter-spacing: 2px;
+      background: linear-gradient(135deg, #bae6fd, #38bdf8, #818cf8);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 0.5rem;
+      filter: drop-shadow(0 0 18px #2563eb70);
+      word-break: break-word;
+    }
 
-h1 {
-  text-align: center;
-  font-size: 36px;
-  margin-bottom: 40px;
-  font-weight: 600;
-  color: #38bdf8;
-  text-shadow: 0 0 12px rgba(56, 189, 248, 0.6);
-}
+    .sub-header {
+      text-align: center;
+      color: #94a3b8;
+      margin-bottom: 2.5rem;
+      font-size: 1rem;
+      letter-spacing: 1px;
+      border-bottom: 1px dashed #334155;
+      padding-bottom: 1.2rem;
+    }
 
-.card {
-  background: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(18px);
-  padding: 30px;
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4),
-              inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  margin-bottom: 30px;
-  transition: all 0.3s ease;
-}
+    .input-card {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-radius: 2rem;
+      padding: 2rem 2rem 1.8rem;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      margin-bottom: 2.8rem;
+      border: 1px solid rgba(71, 85, 105, 0.4);
+      transition: transform 0.25s ease, box-shadow 0.3s;
+    }
 
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.55),
-              inset 0 1px 0 rgba(255, 255, 255, 0.08);
-}
+    .input-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 25px 45px rgba(56, 189, 248, 0.15);
+    }
 
-label {
-  font-size: 14px;
-  opacity: 0.8;
-}
+    .field {
+      margin-bottom: 1.3rem;
+    }
 
-input, textarea {
-  width: 100%;
-  padding: 14px;
-  margin-top: 8px;
-  margin-bottom: 18px;
-  background: rgba(2, 6, 23, 0.9);
-  border: 1px solid #1e293b;
-  border-radius: 8px;
-  color: white;
-  font-size: 16px;
-  transition: 0.3s;
-}
+    label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.8px;
+      color: #cbd5e1;
+      margin-bottom: 0.4rem;
+      text-transform: uppercase;
+    }
 
-input:focus, textarea:focus {
-  outline: none;
-  box-shadow: 0 0 8px #38bdf8;
-  border-color: #38bdf8;
-}
+    .field-hint {
+      font-size: 0.75rem;
+      color: #64748b;
+      margin-top: 0.2rem;
+      letter-spacing: 0.3px;
+    }
 
-textarea {
-  height: 80px;
-  resize: none;
-}
+    input, textarea {
+      width: 100%;
+      padding: 0.9rem 1.2rem;
+      background: rgba(2, 6, 23, 0.85);
+      border: 1px solid #334155;
+      border-radius: 1rem;
+      font-size: 1rem;
+      color: #f1f5f9;
+      transition: all 0.25s ease;
+      outline: none;
+      font-family: inherit;
+      resize: vertical;
+      backdrop-filter: blur(4px);
+    }
 
-button {
-  padding: 14px 20px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 16px;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
-  color: white;
-  transition: 0.3s;
-}
+    input:focus, textarea:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 15px #38bdf870, 0 0 0 1px rgba(56, 189, 248, 0.5);
+      background: rgba(2, 6, 23, 0.95);
+    }
 
-button:hover {
-  background: linear-gradient(135deg, #8b5cf6, #6366f1);
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
-}
+    textarea {
+      height: 90px;
+    }
 
-.generate {
-  width: 100%;
-  margin-top: 10px;
-}
+    .generate-btn {
+      background: linear-gradient(125deg, #4f46e5, #7c3aed, #a855f7);
+      border: none;
+      padding: 1rem 2rem;
+      width: 100%;
+      border-radius: 1.2rem;
+      font-weight: 600;
+      font-size: 1.2rem;
+      color: white;
+      letter-spacing: 2px;
+      cursor: pointer;
+      margin-top: 1.2rem;
+      box-shadow: 0 8px 20px rgba(99, 102, 241, 0.45);
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
 
-.results {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
-  gap: 20px;
-  margin-top: 30px;
-}
+    .generate-btn:hover {
+      background: linear-gradient(125deg, #6366f1, #8b5cf6, #c084fc);
+      transform: translateY(-3px);
+      box-shadow: 0 15px 30px rgba(129, 140, 248, 0.6);
+    }
 
-.promptCard {
-  background: rgba(2, 6, 23, 0.95);
-  border: 1px solid #1e293b;
-  padding: 22px;
-  border-radius: 14px;
-  line-height: 1.7;
-  position: relative;
-  transition: 0.3s;
-}
+    .generate-btn:active {
+      transform: translateY(0px);
+    }
 
-.promptCard:hover {
-  transform: scale(1.02);
-  box-shadow: 0 0 25px rgba(56, 189, 248, 0.5);
-}
+    .generate-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
 
-.promptTitle {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 10px;
-  color: #38bdf8;
-}
+    .stats-info {
+      text-align: center;
+      margin: 1rem 0 0.5rem;
+      font-size: 0.85rem;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.3rem;
+    }
 
-.promptText {
-  white-space: pre-wrap;
-  font-size: 14px;
-  opacity: 0.9;
-}
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+      gap: 1.7rem;
+      margin-top: 1.2rem;
+    }
 
-.copyBtn {
-  margin-top: 16px;
-  padding: 8px 14px;
-  font-size: 14px;
-  border-radius: 6px;
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: #fff;
-  cursor: pointer;
-  border: none;
-  transition: 0.3s;
-}
+    .prompt-card {
+      background: rgba(2, 6, 23, 0.9);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid #1e293b;
+      border-radius: 1.5rem;
+      padding: 1.5rem 1.4rem 1.3rem;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+      position: relative;
+    }
 
-.copyBtn:hover {
-  transform: scale(1.05);
-}
+    .prompt-card:hover {
+      border-color: #38bdf8;
+      box-shadow: 0 0 28px rgba(56, 189, 248, 0.5), 0 10px 25px black;
+      transform: translateY(-5px);
+      background: rgba(15, 23, 42, 0.95);
+    }
 
-.copyBtn.copied {
-  background: #334155;
-}
-</style>
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #7dd3fc;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      border-left: 4px solid #38bdf8;
+      padding-left: 0.8rem;
+    }
+
+    .unique-badge {
+      background: rgba(56, 189, 248, 0.2);
+      color: #7dd3fc;
+      font-size: 0.7rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 1rem;
+      margin-left: auto;
+      letter-spacing: 0.5px;
+    }
+
+    .prompt-content {
+      font-size: 0.9rem;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      word-break: break-word;
+      color: #cbd5e1;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 0.9rem;
+      padding: 0.9rem 1rem;
+      margin-bottom: 1.2rem;
+      flex: 1;
+      border: 1px solid #1e293b;
+    }
+
+    .copy-button {
+      background: linear-gradient(115deg, #059669, #10b981);
+      border: none;
+      padding: 0.6rem 1rem;
+      border-radius: 2rem;
+      font-weight: 600;
+      color: white;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: 0.25s;
+      letter-spacing: 0.8px;
+      align-self: flex-start;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4);
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .copy-button:hover {
+      background: linear-gradient(115deg, #10b981, #34d399);
+      box-shadow: 0 6px 16px #10b98180;
+      transform: scale(1.03);
+    }
+
+    .copy-button.copied {
+      background: #334155;
+      box-shadow: none;
+      color: #cbd5e1;
+    }
+
+    @media (max-width: 550px) {
+      .glass-panel {
+        padding: 1.8rem 1.2rem;
+      }
+      h1 {
+        font-size: 2rem;
+      }
+      .results-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
-
 <body>
+<div class="glass-panel">
+  <h1>✨ 古月AI智能体</h1>
+  <div class="sub-header">纯文字海报 · 去重提示词工厂</div>
 
-<div class="container">
+  <!-- 输入卡片 -->
+  <div class="input-card">
+    <div class="field">
+      <label>📌 海报主题 <span style="color:#f87171;">*</span></label>
+      <input type="text" id="posterTitle" placeholder="例如：设计改变世界" value="设计改变世界">
+      <div class="field-hint">⚠️ 此内容将原样保留，不会自动修改</div>
+    </div>
+    <div class="field">
+      <label>📎 副标题 <span style="color:#f87171;">*</span></label>
+      <input type="text" id="posterSubtitle" placeholder="例如：字体是最强视觉语言" value="字体是最强视觉语言">
+      <div class="field-hint">⚠️ 此内容将原样保留，不会自动修改</div>
+    </div>
+    <div class="field">
+      <label>📝 辅助文字（可选）</label>
+      <textarea id="assistText" placeholder="例如：时间、地点、口号等信息">2026国际设计周 · 10.28-11.05
+        城市文化艺术中心 · 未来设计研究院</textarea>
+      <div class="field-hint">⚠️ 此内容将原样保留，不会自动修改</div>
+    </div>
+    <button class="generate-btn" id="generateBtn">
+      <span>⚡</span> 生成20组不重复提示词
+    </button>
+    <div class="stats-info" id="statsInfo"></div>
+  </div>
 
-<h1>古月AI智能体 - AI纯文字海报生成器</h1>
-
-<div class="card">
-
-<label>海报主题</label>
-<input id="title" placeholder="例如：设计改变世界">
-
-<label>海报副标题</label>
-<input id="subtitle" placeholder="例如：字体是最强视觉语言">
-
-<label>辅助文字（可选）</label>
-<textarea id="assist" placeholder="例如：时间、地点、口号等信息"></textarea>
-
-<button class="generate" onclick="generate()">生成20组提示词</button>
-
-</div>
-
-<div id="results" class="results"></div>
-
+  <!-- 结果展示区 -->
+  <div id="resultsContainer" class="results-grid"></div>
 </div>
 
 <script>
-function rand(arr) {
-  return arr[Math.floor(Math.random() * arr.length)];
-}
+  (function() {
+    // --- 设计元素库 (保持不变) ---
+    const fonts = [
+      "现代黑体与宋体混搭",
+      "粗黑体与极细黑体对比",
+      "几何无衬线字体组合",
+      "未来感字体系统",
+      "工业风字体结构",
+      "复古宋体与现代字体结合",
+      "书法字体与极简黑体组合",
+      "实验性字体组合"
+    ];
 
-let fonts = [
-  "现代黑体与宋体混搭",
-  "粗黑体与极细黑体对比",
-  "几何无衬线字体组合",
-  "未来感字体系统",
-  "工业风字体结构",
-  "复古宋体与现代字体结合",
-  "书法字体与极简黑体组合",
-  "实验性字体组合"
-];
+    const layouts = [
+      "12列网格系统排版",
+      "非对称构图结构",
+      "中轴对称构图",
+      "九宫格构图系统",
+      "黄金比例构图",
+      "对角线视觉动线构图",
+      "模块化排版结构",
+      "极简留白构图"
+    ];
 
-let layouts = [
-  "12列网格系统排版",
-  "非对称构图结构",
-  "中轴对称构图",
-  "九宫格构图系统",
-  "黄金比例构图",
-  "对角线视觉动线构图",
-  "模块化排版结构",
-  "极简留白构图"
-];
+    const colors = [
+      "黑白单色体系",
+      "黑红对比体系",
+      "深蓝白色体系",
+      "灰度层级体系",
+      "米白墨色体系",
+      "黑金高级体系"
+    ];
 
-let colors = [
-  "黑白单色体系",
-  "黑红对比体系",
-  "深蓝白色体系",
-  "灰度层级体系",
-  "米白墨色体系",
-  "黑金高级体系"
-];
+    const visuals = [
+      "文字巨大结构形成视觉中心",
+      "文字矩阵形成空间结构",
+      "文字纵横排列形成视觉路径",
+      "文字围合形成图形结构",
+      "负形空间强化视觉节奏",
+      "文字叠加形成设计张力"
+    ];
 
-let visuals = [
-  "文字巨大结构形成视觉中心",
-  "文字矩阵形成空间结构",
-  "文字纵横排列形成视觉路径",
-  "文字围合形成图形结构",
-  "负形空间强化视觉节奏",
-  "文字叠加形成设计张力"
-];
+    const aiOptimize = [
+      "强化标题视觉冲击力",
+      "优化文字层级系统",
+      "加强版面留白",
+      "优化视觉阅读路径",
+      "强化字体对比关系"
+    ];
 
-let aiOptimize = [
-  "强化标题视觉冲击力",
-  "优化文字层级系统",
-  "加强版面留白",
-  "优化视觉阅读路径",
-  "强化字体对比关系"
-];
+    // 获取DOM元素
+    const titleInput = document.getElementById('posterTitle');
+    const subtitleInput = document.getElementById('posterSubtitle');
+    const assistInput = document.getElementById('assistText');
+    const generateBtn = document.getElementById('generateBtn');
+    const resultsContainer = document.getElementById('resultsContainer');
+    const statsInfo = document.getElementById('statsInfo');
 
-function generate() {
-  let title = document.getElementById("title").value.trim();
-  let subtitle = document.getElementById("subtitle").value.trim();
-  let assistInput = document.getElementById("assist").value.trim();
+    /**
+     * 核心函数：生成20组不重复的提示词
+     * 策略：
+     * 1. 先计算所有可能的组合总数 (fonts × layouts × colors × visuals × aiOptimize)
+     * 2. 如果组合数 >= 20，随机选取20个不重复组合
+     * 3. 如果组合数 < 20，则使用所有组合 + 补充变体（通过微调描述）
+     */
+    function generateUniquePrompts(title, subtitle, assistText) {
+      const combinations = [];
+      
+      // 生成所有基础组合
+      for (let f = 0; f < fonts.length; f++) {
+        for (let l = 0; l < layouts.length; l++) {
+          for (let c = 0; c < colors.length; c++) {
+            for (let v = 0; v < visuals.length; v++) {
+              for (let a = 0; a < aiOptimize.length; a++) {
+                combinations.push({
+                  font: fonts[f],
+                  layout: layouts[l],
+                  color: colors[c],
+                  visual: visuals[v],
+                  optimize: aiOptimize[a]
+                });
+              }
+            }
+          }
+        }
+      }
 
-  if (!title) {
-    alert("请输入海报主题");
-    return;
-  }
+      const totalCombinations = combinations.length; // 8×8×6×6×5 = 11520
+      
+      // 随机打乱数组 (Fisher-Yates 洗牌算法)
+      function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+      }
 
-  let container = document.getElementById("results");
-  container.innerHTML = "";
+      // 如果需要20组且组合数足够，随机选20个
+      if (totalCombinations >= 20) {
+        const shuffled = shuffleArray([...combinations]);
+        return shuffled.slice(0, 20).map((combo, index) => ({
+          ...combo,
+          index: index + 1,
+          isVariant: false
+        }));
+      }
+      
+      // 如果组合数不足20（理论上不会发生，因为有11520种），使用所有组合+补充
+      const allBaseCombos = shuffleArray([...combinations]);
+      const result = allBaseCombos.map((combo, index) => ({
+        ...combo,
+        index: index + 1,
+        isVariant: false
+      }));
+      
+      // 补充不足部分：通过微调描述生成变体
+      const variantSuffixes = [
+        " (强调极简风格)",
+        " (强调视觉张力)",
+        " (强调留白艺术)",
+        " (强调字体对比)",
+        " (强调网格系统)",
+        " (强调色彩对比)",
+        " (强调空间层次)",
+        " (强调阅读节奏)"
+      ];
+      
+      let variantIndex = 0;
+      while (result.length < 20) {
+        const baseCombo = allBaseCombos[variantIndex % allBaseCombos.length];
+        const suffix = variantSuffixes[Math.floor(variantIndex / allBaseCombos.length) % variantSuffixes.length];
+        result.push({
+          font: baseCombo.font + suffix,
+          layout: baseCombo.layout,
+          color: baseCombo.color,
+          visual: baseCombo.visual,
+          optimize: baseCombo.optimize,
+          index: result.length + 1,
+          isVariant: true
+        });
+        variantIndex++;
+      }
+      
+      return result;
+    }
 
-  for (let i = 1; i <= 20; i++) {
-    // 如果用户输入了辅助文字，就随机使用一行，否则使用默认
-    let assistText = assistInput ? assistInput : `时间：2026设计论坛\n地点：城市文化艺术中心\n主办方：未来设计研究院`;
-
-    let text = `
-主标题：${title}
+    // 构建提示词文本（强制使用原始输入）
+    function buildPromptText(title, subtitle, assistRaw, combo) {
+      // 严格使用原始输入，不做任何修改
+      const assistText = assistRaw.trim() || "时间：2026设计论坛\n地点：城市文化艺术中心\n主办方：未来设计研究院";
+      
+      return `主标题：${title}
 副标题：${subtitle}
 
 辅助文字：
 ${assistText}
 
 纯文字视觉元素：
-${rand(visuals)}
+${combo.visual}
 
 文字设计手法：
-${rand(fonts)}
+${combo.font}
 
 版面构成：
-${rand(layouts)}
+${combo.layout}
 
 色彩方案：
-${rand(colors)}
+${combo.color}
 
 AI优化建议：
-${rand(aiOptimize)}
+${combo.optimize}
 
 风格：
-纯文字排版设计、版面构成严谨、字体应用精准。
-`;
+纯文字排版设计、版面构成严谨、字体应用精准。`;
+    }
 
-    let card = document.createElement("div");
-    card.className = "promptCard";
-    card.innerHTML = `
-<div class="promptTitle">提示词 #${i}</div>
-<div class="promptText">${text}</div>
-<button class="copyBtn">复制提示词</button>
-`;
+    // 转义HTML
+    function escapeHtml(text) {
+      return text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
 
-    let btn = card.querySelector("button");
-    btn.onclick = function () {
-      navigator.clipboard.writeText(text);
-      btn.innerText = "已复制";
-      btn.classList.add("copied");
-      setTimeout(() => {
-        btn.innerText = "复制提示词";
-        btn.classList.remove("copied");
-      }, 3000);
-    };
+    // 转义属性
+    function escapeAttribute(text) {
+      return text.replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
 
-    container.appendChild(card);
-  }
-}
+    // 验证去重（调试用，可注释掉）
+    function validateUniqueness(prompts) {
+      const seen = new Set();
+      for (const prompt of prompts) {
+        if (seen.has(prompt)) {
+          console.warn('发现重复提示词！', prompt.substring(0, 100));
+          return false;
+        }
+        seen.add(prompt);
+      }
+      return true;
+    }
+
+    // 渲染卡片
+    function renderCards() {
+      const title = titleInput.value.trim();
+      const subtitle = subtitleInput.value.trim();
+
+      if (!title) {
+        alert('❌ 请输入海报主题');
+        titleInput.focus();
+        return;
+      }
+      
+      if (!subtitle) {
+        alert('❌ 请输入海报副标题');
+        subtitleInput.focus();
+        return;
+      }
+
+      // 获取原始辅助文字
+      const assistValue = assistInput.value;
+
+      // 生成20组不重复组合
+      const uniqueCombos = generateUniquePrompts(title, subtitle, assistValue);
+      
+      // 构建所有提示词文本（严格使用原始输入）
+      const promptTexts = uniqueCombos.map(combo => 
+        buildPromptText(title, subtitle, assistValue, combo)
+      );
+
+      // 验证去重
+      const isUnique = validateUniqueness(promptTexts);
+      console.log(`✅ 生成${promptTexts.length}组提示词，去重验证：${isUnique ? '通过' : '失败'}`);
+
+      // 清空容器
+      resultsContainer.innerHTML = '';
+
+      // 渲染卡片
+      uniqueCombos.forEach((combo, idx) => {
+        const promptText = promptTexts[idx];
+        
+        const card = document.createElement('div');
+        card.className = 'prompt-card';
+        
+        card.innerHTML = `
+          <div class="card-title">
+            <span>🎯 提示词 #${combo.index}</span>
+            <span class="unique-badge">唯一组合</span>
+          </div>
+          <div class="prompt-content">${escapeHtml(promptText)}</div>
+          <button class="copy-button" data-text="${escapeAttribute(promptText)}">
+            <span>📋</span> 复制提示词
+          </button>
+        `;
+
+        // 绑定复制事件
+        const copyBtn = card.querySelector('.copy-button');
+        copyBtn.addEventListener('click', function() {
+          const textToCopy = this.getAttribute('data-text');
+          navigator.clipboard.writeText(textToCopy).then(() => {
+            this.innerHTML = '<span>✓</span> 已复制';
+            this.classList.add('copied');
+            setTimeout(() => {
+              this.innerHTML = '<span>📋</span> 复制提示词';
+              this.classList.remove('copied');
+            }, 2500);
+          }).catch(() => {
+            alert('复制失败，请手动复制');
+          });
+        });
+
+        resultsContainer.appendChild(card);
+      });
+
+      // 显示统计信息
+      statsInfo.innerHTML = `✅ 已生成 <strong>20</strong> 组不重复提示词 | 组合池总量：<strong>11,520</strong> 种 | 主题/副标题/辅助文字均保持原样`;
+    }
+
+    // 绑定生成按钮
+    generateBtn.addEventListener('click', renderCards);
+
+    // 页面加载自动生成
+    window.addEventListener('DOMContentLoaded', () => {
+      renderCards();
+    });
+
+  })();
 </script>
-
 </body>
 </html>
